@@ -17,7 +17,7 @@ use Sys::Hostname;
 # Blank defaults to use ssh client's default
 # TODO: Merge into a single "sshflags" option?
 my %args = ('sshkey' => '', 'sshport' => '', 'sshcipher' => '', 'sshoption' => [], 'target-bwlimit' => '', 'source-bwlimit' => '');
-GetOptions(\%args, "no-command-checks", "monitor-version", "compress=s", "dumpsnaps", "recursive|r",
+GetOptions(\%args, "no-command-checks", "no-sudo", "monitor-version", "compress=s", "dumpsnaps", "recursive|r",
                    "source-bwlimit=s", "target-bwlimit=s", "sshkey=s", "sshport=i", "sshcipher|c=s", "sshoption|o=s@",
                    "debug", "quiet", "no-stream", "no-sync-snap", "no-resume") or pod2usage(2);
 
@@ -54,7 +54,7 @@ my $pscmd = '/bin/ps';
 
 my $pvcmd = '/usr/bin/pv';
 my $mbuffercmd = '/usr/bin/mbuffer';
-my $sudocmd = '/usr/bin/sudo';
+my $sudocmd = (defined $args{'no-sudo'} ? '' : '/usr/bin/sudo');
 my $mbufferoptions = '-q -s 128k -m 16M 2>/dev/null';
 # currently using ls to check for file existence because we aren't depending on perl
 # being present on remote machines.
@@ -1152,4 +1152,5 @@ Options:
   --quiet               Suppresses non-error output
   --dumpsnaps           Dumps a list of snapshots during the run
   --no-command-checks   Do not check command existence before attempting transfer. Not recommended
+  --no-sudo             Do not attempt to elevate privlege with sudo
   --no-resume           Don't use the ZFS resume feature if available
